@@ -2,6 +2,12 @@
 
 Four assignments showing how my use of classes changed between a 2024 group tour-booking project and three individual CSIT 121 assignments in 2025 at UOW (SIM Singapore).
 
+## Tech stack
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
+
+Standard-library Python, including `abc`, `csv` and `unittest`; no external packages are required.
+
 ## What to read
 
 | Folder | Work | Main idea |
