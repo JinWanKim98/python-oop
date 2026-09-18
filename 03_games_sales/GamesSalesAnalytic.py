@@ -1,3 +1,6 @@
+import csv
+import math
+
 # Additional Class Implementation - GameRecord class to encapsulate individual game data
 class GameRecord:
     def __init__(self, name, platform, year_of_release, genre, publisher, global_sales, critic_score, developer,
@@ -41,6 +44,8 @@ class Analytic:
     # Additional Private Method Implementation - __validate_record method
     def __validate_record(self, values):
         errors = []
+        if len(values) != 9:
+            return [f"expected 9 fields, got {len(values)}"]
 
         # Check for empty fields in any column
         for j in range(len(values)):
@@ -62,8 +67,8 @@ class Analytic:
             if len(values) > 5:
                 try:
                     sales = float(values[5])
-                    if sales <= 0:
-                        errors.append(f"index 5 is not positive")
+                    if not math.isfinite(sales) or sales <= 0:
+                        errors.append(f"index 5 must be finite and positive")
                 except ValueError:
                     errors.append(f"index 5 is not float")
 
@@ -74,55 +79,33 @@ class Analytic:
                     if score <= 0:
                         errors.append(f"index 6 is not positive")
                 except ValueError:
-                    errors.append(f"index 6 is not float")
+                    errors.append(f"index 6 is not integer")
 
         return errors
 
     def __load_csv(self, filename):
         """Private method to load and process CSV file with error handling"""
-        # Read all lines from the CSV file
-        with open(filename, 'r') as file:
-            lines = file.readlines()
-
-        # Process the header row
-        if lines:
-            self.__headers = lines[0].strip().split(',')
-        else:
-            return
-
-        # Open error log file to record any data validation issues
-        with open("errors.txt", "w") as error_file:
-            # Process each data row starting from line 2
-            for i in range(1, len(lines)):
-                line = lines[i].strip()
-                if not line:  # Skip empty lines
+        with open(filename, newline='', encoding='utf-8-sig') as file, \
+                open("errors.txt", "w", encoding="utf-8") as error_file:
+            reader = csv.reader(file)
+            self.__headers = next(reader, [])
+            if not self.__headers:
+                return
+            if len(self.__headers) != 9:
+                raise ValueError("Expected a CSV header with 9 columns")
+            for values in reader:
+                if not values or all(not value.strip() for value in values):
                     continue
-
-                # Split the line into individual field values
-                values = line.split(',')
-
-                # Use the additional private method to validate this record
                 errors = self.__validate_record(values)
-
                 if errors:
-                    # Write errors to the error file
-                    error_message = f"Line {i + 1}: " + ", ".join(errors)
-                    error_file.write(error_message + "\n")
-                else:
-                    # Create GameRecord object for valid data (using additional class)
-                    game_record = GameRecord(
-                        values[0].strip(),
-                        values[1].strip(),
-                        int(values[2]),
-                        values[3].strip(),
-                        values[4].strip(),
-                        float(values[5]),
-                        int(values[6]),
-                        values[7].strip(),
-                        values[8].strip()
-                    )
-                    # Convert back to dictionary and store in data list
-                    self.__data.append(game_record.to_dict())
+                    error_file.write(f"Line {reader.line_num}: " + ", ".join(errors) + "\n")
+                    continue
+                game_record = GameRecord(
+                    values[0].strip(), values[1].strip(), int(values[2]),
+                    values[3].strip(), values[4].strip(), float(values[5]),
+                    int(values[6]), values[7].strip(), values[8].strip()
+                )
+                self.__data.append(game_record.to_dict())
 
     @property
     def count(self):
