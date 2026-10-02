@@ -1,6 +1,6 @@
 # Python OOP — coursework across two semesters
 
-Four assignments showing how my use of classes changed between a 2024 group tour-booking project and three individual CSIT 121 assignments in 2025 at UOW (SIM Singapore).
+Four assignments showing how my use of classes changed between a 2024 group tour-booking project and three individual assignments in 2025 at UOW (SIM Singapore).
 
 ## Tech stack
 
@@ -36,7 +36,7 @@ The tour application reads and writes the text files in its own directory. Use a
 
 The games module needs a nine-column CSV in this order: name, platform, release year, genre, publisher, global sales, critic score, developer, rating. Course data files are not included. The automated test constructs a small temporary CSV, including quoted commas, short/long rows and invalid sales values.
 
-## Portfolio maintenance
+## Changes after submission
 
 The games loader now uses `csv.reader`, rejects rows with the wrong field count, and rejects non-finite sales values. Invalid rows are logged to `errors.txt` and skipped. The original assignment's 1950–2025 release-year range and positive-sales rule remain; this is not a general current-games data importer.
 
